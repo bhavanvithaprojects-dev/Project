@@ -1,16 +1,47 @@
-version: 2
+name: Hospital Appointment API CI
 
-updates:
-  # Python dependencies managed by Poetry
-  - package-ecosystem: "pip"
-    directory: "/"
-    schedule:
-      interval: "monthly"
-    open-pull-requests-limit: 5
+on:
+  push:
+    branches:
+      - master
 
-  # GitHub Actions dependencies
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "monthly"
-    open-pull-requests-limit: 5
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  quality:
+    name: Quality, Tests and Security
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Gate 1 - Ruff lint
+        run: poetry run ruff check .
+
+      - name: Gate 2 - Pytest coverage
+        run: |
+          poetry run pytest \
+            --cov=app \
+            --cov-report=term-missing \
+            --cov-fail-under=85
+
+      - name: Gate 3 - Bandit security scan
+        run: poetry run bandit -r app
