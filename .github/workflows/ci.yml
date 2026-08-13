@@ -10,7 +10,7 @@ on:
 
 jobs:
   quality:
-    name: Code Quality, Tests and Security
+    name: Quality Tests Security
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +23,11 @@ jobs:
           python-version: "3.14"
 
       - name: Install Poetry
-        run: pip install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
 
       - name: Install dependencies
         run: poetry install
@@ -31,7 +35,7 @@ jobs:
       - name: Gate 1 - Lint
         run: poetry run ruff check .
 
-      - name: Gate 2 - Tests and Coverage
+      - name: Gate 2 - Test Coverage
         run: |
           poetry run pytest \
             --cov=app \
