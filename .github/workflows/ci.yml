@@ -45,3 +45,4 @@ jobs:
 
       - name: Gate 3 - Bandit security scan
         run: poetry run bandit -r app
+        
