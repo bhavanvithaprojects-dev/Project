@@ -4,24 +4,28 @@ on:
   push:
     branches:
       - main
+
   pull_request:
     branches:
       - main
 
 jobs:
   quality:
-    name: Quality Tests Security
+    name: Quality, Tests and Security
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Python 3.14
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.14"
 
+      # Install Poetry
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
@@ -29,18 +33,22 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
 
+      # Install dependencies
       - name: Install dependencies
         run: poetry install
 
-      - name: Gate 1 - Lint
+      # Gate 1 - Linting
+      - name: Gate 1 - Ruff lint
         run: poetry run ruff check .
 
-      - name: Gate 2 - Test Coverage
+      # Gate 2 - Tests & Coverage
+      - name: Gate 2 - Pytest coverage
         run: |
           poetry run pytest \
             --cov=app \
             --cov-report=term-missing \
             --cov-fail-under=85
 
-      - name: Gate 3 - Security
+      # Gate 3 - Security
+      - name: Gate 3 - Bandit security scan
         run: poetry run bandit -r app
