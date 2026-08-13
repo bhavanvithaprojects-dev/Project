@@ -1,20 +1,17 @@
-FROM python:3.12-slim
+FROM python:3.14-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir poetry
+COPY requirements.txt .
 
-COPY pyproject.toml poetry.lock ./
-
-RUN poetry config virtualenvs.create false \
-    && poetry install --only main --no-interaction --no-ansi
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
 COPY alembic ./alembic
-COPY alembic.ini ./
+COPY alembic.ini .
 
 EXPOSE 8000
 
