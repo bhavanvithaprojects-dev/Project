@@ -12,10 +12,7 @@ router = APIRouter(
 )
 
 
-@router.get(
-    "",
-    response_model=list[DoctorResponse],
-)
+@router.get("", response_model=list[DoctorResponse])
 def get_doctors(db: Session = Depends(get_db)):
     return db.scalars(select(Doctor)).all()
 
@@ -29,19 +26,16 @@ def create_doctor(
     doctor: DoctorCreate,
     db: Session = Depends(get_db),
 ):
-    db_doctor = Doctor(**doctor.model_dump())
+    new_doctor = Doctor(**doctor.model_dump())
 
-    db.add(db_doctor)
+    db.add(new_doctor)
     db.commit()
-    db.refresh(db_doctor)
+    db.refresh(new_doctor)
 
-    return db_doctor
+    return new_doctor
 
 
-@router.get(
-    "/{doctor_id}",
-    response_model=DoctorResponse,
-)
+@router.get("/{doctor_id}", response_model=DoctorResponse)
 def get_doctor(
     doctor_id: int,
     db: Session = Depends(get_db),

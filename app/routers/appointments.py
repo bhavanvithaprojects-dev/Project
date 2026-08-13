@@ -17,10 +17,7 @@ router = APIRouter(
 )
 
 
-@router.get(
-    "",
-    response_model=list[AppointmentResponse],
-)
+@router.get("", response_model=list[AppointmentResponse])
 def get_appointments(db: Session = Depends(get_db)):
     return db.query(Appointment).all()
 
@@ -56,24 +53,26 @@ def create_appointment(
             detail="Doctor not found",
         )
 
-    if has_overlapping_appointment(
+    overlap = has_overlapping_appointment(
         db,
         appointment.doctor_id,
         appointment.appointment_start,
         appointment.appointment_end,
-    ):
+    )
+
+    if overlap:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Doctor already has an overlapping appointment",
         )
 
-    db_appointment = Appointment(**appointment.model_dump())
+    new_appointment = Appointment(**appointment.model_dump())
 
-    db.add(db_appointment)
+    db.add(new_appointment)
     db.commit()
-    db.refresh(db_appointment)
+    db.refresh(new_appointment)
 
-    return db_appointment
+    return new_appointment
 
 
 @router.get(

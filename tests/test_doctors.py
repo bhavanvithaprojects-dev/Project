@@ -1,41 +1,37 @@
+def test_get_doctors(client):
+    response = client.get("/doctors")
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
 def test_create_doctor(client):
     response = client.post(
         "/doctors",
         json={
-            "name": "Dr. Smith",
+            "name": "Dr Smith",
             "specialization": "Cardiology",
         },
     )
 
     assert response.status_code == 201
-    assert response.json()["name"] == "Dr. Smith"
 
+    data = response.json()
 
-def test_get_doctors(client):
-    client.post(
-        "/doctors",
-        json={
-            "name": "Dr. Smith",
-            "specialization": "Cardiology",
-        },
-    )
-
-    response = client.get("/doctors")
-
-    assert response.status_code == 200
-    assert len(response.json()) == 1
+    assert data["name"] == "Dr Smith"
+    assert data["specialization"] == "Cardiology"
 
 
 def test_get_doctor(client):
-    create_response = client.post(
+    response = client.post(
         "/doctors",
         json={
-            "name": "Dr. Smith",
+            "name": "Dr Smith",
             "specialization": "Cardiology",
         },
     )
 
-    doctor_id = create_response.json()["id"]
+    doctor_id = response.json()["id"]
 
     response = client.get(f"/doctors/{doctor_id}")
 
@@ -43,7 +39,7 @@ def test_get_doctor(client):
     assert response.json()["id"] == doctor_id
 
 
-def test_missing_doctor(client):
+def test_doctor_not_found(client):
     response = client.get("/doctors/999")
 
     assert response.status_code == 404

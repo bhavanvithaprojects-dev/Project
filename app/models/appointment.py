@@ -11,25 +11,12 @@ class Appointment(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
 
-    patient_id: Mapped[int] = mapped_column(
-        ForeignKey("patients.id"),
-        nullable=False,
-    )
+    patient_id: Mapped[int] = mapped_column(ForeignKey("patients.id"))
 
-    doctor_id: Mapped[int] = mapped_column(
-        ForeignKey("doctors.id"),
-        nullable=False,
-    )
+    doctor_id: Mapped[int] = mapped_column(ForeignKey("doctors.id"))
 
-    appointment_start: Mapped[datetime] = mapped_column(
-        DateTime,
-        nullable=False,
-    )
-
-    appointment_end: Mapped[datetime] = mapped_column(
-        DateTime,
-        nullable=False,
-    )
+    appointment_start: Mapped[datetime] = mapped_column(DateTime)
+    appointment_end: Mapped[datetime] = mapped_column(DateTime)
 
     patient = relationship(
         "Patient",

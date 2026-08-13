@@ -8,14 +8,13 @@ class Patient(Base):
     __tablename__ = "patients"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    name: Mapped[str] = mapped_column(String(100))
     email: Mapped[str] = mapped_column(
         String(255),
         unique=True,
-        nullable=False,
         index=True,
     )
-    phone: Mapped[str] = mapped_column(String(30), nullable=False)
+    phone: Mapped[str] = mapped_column(String(30))
 
     appointments = relationship(
         "Appointment",

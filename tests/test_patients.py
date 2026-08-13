@@ -1,10 +1,17 @@
+def test_get_patients(client):
+    response = client.get("/patients")
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
 def test_create_patient(client):
     response = client.post(
         "/patients",
         json={
-            "name": "John Doe",
+            "name": "John",
             "email": "john@example.com",
-            "phone": "9876543210",
+            "phone": "1234567890",
         },
     )
 
@@ -12,38 +19,22 @@ def test_create_patient(client):
 
     data = response.json()
 
-    assert data["name"] == "John Doe"
+    assert data["name"] == "John"
     assert data["email"] == "john@example.com"
-    assert "id" in data
-
-
-def test_get_patients(client):
-    client.post(
-        "/patients",
-        json={
-            "name": "John Doe",
-            "email": "john@example.com",
-            "phone": "9876543210",
-        },
-    )
-
-    response = client.get("/patients")
-
-    assert response.status_code == 200
-    assert len(response.json()) == 1
+    assert data["phone"] == "1234567890"
 
 
 def test_get_patient(client):
-    create_response = client.post(
+    response = client.post(
         "/patients",
         json={
-            "name": "John Doe",
+            "name": "John",
             "email": "john@example.com",
-            "phone": "9876543210",
+            "phone": "1234567890",
         },
     )
 
-    patient_id = create_response.json()["id"]
+    patient_id = response.json()["id"]
 
     response = client.get(f"/patients/{patient_id}")
 
@@ -51,21 +42,22 @@ def test_get_patient(client):
     assert response.json()["id"] == patient_id
 
 
-def test_get_missing_patient(client):
+def test_patient_not_found(client):
     response = client.get("/patients/999")
 
     assert response.status_code == 404
 
 
 def test_duplicate_patient_email(client):
-    payload = {
-        "name": "John Doe",
+    patient = {
+        "name": "John",
         "email": "john@example.com",
-        "phone": "9876543210",
+        "phone": "1234567890",
     }
 
-    assert client.post("/patients", json=payload).status_code == 201
+    response = client.post("/patients", json=patient)
+    assert response.status_code == 201
 
-    response = client.post("/patients", json=payload)
+    response = client.post("/patients", json=patient)
 
     assert response.status_code == 409

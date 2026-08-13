@@ -8,9 +8,9 @@ class PatientCreate(BaseModel):
 
 
 class PatientResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
     id: int
     name: str
     email: EmailStr
     phone: str
+
+    model_config = ConfigDict(from_attributes=True)

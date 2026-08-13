@@ -8,11 +8,8 @@ class Doctor(Base):
     __tablename__ = "doctors"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    name: Mapped[str] = mapped_column(String(100), nullable=False)
-    specialization: Mapped[str] = mapped_column(
-        String(100),
-        nullable=False,
-    )
+    name: Mapped[str] = mapped_column(String(100))
+    specialization: Mapped[str] = mapped_column(String(100))
 
     appointments = relationship(
         "Appointment",

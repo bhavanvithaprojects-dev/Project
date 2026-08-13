@@ -11,11 +11,16 @@ def has_overlapping_appointment(
     doctor_id: int,
     appointment_start: datetime,
     appointment_end: datetime,
-) -> bool:
-    statement = select(Appointment).where(
-        Appointment.doctor_id == doctor_id,
-        Appointment.appointment_start < appointment_end,
-        Appointment.appointment_end > appointment_start,
+):
+    appointment = db.scalar(
+        select(Appointment).where(
+            Appointment.doctor_id == doctor_id,
+            Appointment.appointment_start < appointment_end,
+            Appointment.appointment_end > appointment_start,
+        )
     )
 
-    return db.scalar(statement) is not None
+    if appointment:
+        return True
+
+    return False

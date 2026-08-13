@@ -12,10 +12,7 @@ router = APIRouter(
 )
 
 
-@router.get(
-    "",
-    response_model=list[PatientResponse],
-)
+@router.get("", response_model=list[PatientResponse])
 def get_patients(db: Session = Depends(get_db)):
     return db.scalars(select(Patient)).all()
 
@@ -29,27 +26,24 @@ def create_patient(
     patient: PatientCreate,
     db: Session = Depends(get_db),
 ):
-    existing = db.scalar(select(Patient).where(Patient.email == patient.email))
+    existing_patient = db.scalar(select(Patient).where(Patient.email == patient.email))
 
-    if existing:
+    if existing_patient:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Patient with this email already exists",
+            detail="Email already exists",
         )
 
-    db_patient = Patient(**patient.model_dump())
+    new_patient = Patient(**patient.model_dump())
 
-    db.add(db_patient)
+    db.add(new_patient)
     db.commit()
-    db.refresh(db_patient)
+    db.refresh(new_patient)
 
-    return db_patient
+    return new_patient
 
 
-@router.get(
-    "/{patient_id}",
-    response_model=PatientResponse,
-)
+@router.get("/{patient_id}", response_model=PatientResponse)
 def get_patient(
     patient_id: int,
     db: Session = Depends(get_db),
